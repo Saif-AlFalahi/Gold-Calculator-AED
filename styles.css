@@ -459,6 +459,187 @@ input[type=number] { -moz-appearance: textfield; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ─────────────────────────────────────────────
+   VAT checkbox toggle
+   ───────────────────────────────────────────── */
+.vat-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 2px;
+  cursor: pointer;
+  user-select: none;
+  margin-top: -4px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.vat-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.vat-toggle__box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  background: transparent;
+  flex-shrink: 0;
+  transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.vat-toggle__check {
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  box-shadow: 0 0 6px rgba(212, 175, 55, 0.6);
+  transform: scale(0);
+  transition: transform 180ms cubic-bezier(0.2, 0.9, 0.4, 1.2);
+}
+
+.vat-toggle input:checked ~ .vat-toggle__box {
+  border-color: var(--gold);
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.vat-toggle input:checked ~ .vat-toggle__box .vat-toggle__check {
+  transform: scale(1);
+}
+
+.vat-toggle input:focus-visible ~ .vat-toggle__box {
+  box-shadow: 0 0 0 3px rgba(240, 196, 74, 0.25);
+}
+
+.vat-toggle__text {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  transition: color 180ms ease;
+}
+
+.vat-toggle:hover .vat-toggle__text,
+.vat-toggle input:checked ~ .vat-toggle__text {
+  color: var(--gold);
+}
+
+/* ─────────────────────────────────────────────
+   Live ticker (bottom-center, polls every 5s)
+   ───────────────────────────────────────────── */
+.ticker {
+  position: fixed;
+  bottom: max(24px, calc(env(safe-area-inset-bottom) + 20px));
+  left: 50%;
+  transform: translate(-50%, 8px);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 18px 11px 14px;
+  background: rgba(15, 15, 15, 0.78);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  backdrop-filter: blur(10px) saturate(160%);
+  border: 1px solid rgba(212, 175, 55, 0.28);
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.04),
+    0 14px 36px rgba(0, 0, 0, 0.6),
+    0 0 28px rgba(212, 175, 55, 0.06);
+  opacity: 0;
+  animation: tickerIn 600ms 720ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+@keyframes tickerIn {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.ticker__pulse {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 6px var(--gold), 0 0 12px rgba(212, 175, 55, 0.5);
+  flex-shrink: 0;
+}
+
+.ticker__pulse::before,
+.ticker__pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  animation: pulseRing 2.2s ease-out infinite;
+}
+
+.ticker__pulse::after {
+  animation-delay: 1.1s;
+}
+
+@keyframes pulseRing {
+  0%   { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(3.2); opacity: 0; }
+}
+
+.ticker__label {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.ticker__sep {
+  width: 1px;
+  height: 14px;
+  background: rgba(212, 175, 55, 0.3);
+}
+
+.ticker__price {
+  font-family: 'Fraunces', 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--gold);
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-variation-settings: 'opsz' 36, 'SOFT' 50;
+  transition: color 240ms ease, text-shadow 240ms ease;
+}
+
+.ticker__price.is-updated {
+  color: var(--gold-bright);
+  text-shadow: 0 0 14px rgba(240, 196, 74, 0.65);
+}
+
+.ticker__price.is-stale {
+  color: var(--text-dim);
+}
+
+.ticker__unit {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Pause pulse when reduced motion is preferred */
+@media (prefers-reduced-motion: reduce) {
+  .ticker__pulse::before,
+  .ticker__pulse::after { animation: none; opacity: 0; }
+}
+
 /* Tablet & smaller */
 @media (max-width: 640px) {
   .page-corner {
@@ -494,6 +675,13 @@ input[type=number] { -moz-appearance: textfield; }
     letter-spacing: 0.18em;
   }
   .form { gap: 24px; }
+  .vat-toggle__text { font-size: 11px; letter-spacing: 0.2em; }
+  .ticker {
+    padding: 10px 16px 10px 12px;
+    gap: 10px;
+  }
+  .ticker__price { font-size: 17px; }
+  .ticker__label, .ticker__unit { font-size: 10px; }
   .result__value { font-size: 52px; }
   .result__value .currency { font-size: 20px; }
   .result__meta {
@@ -521,6 +709,17 @@ input[type=number] { -moz-appearance: textfield; }
     letter-spacing: 0.18em;
   }
   .submit { letter-spacing: 0.28em; }
+  .ticker {
+    padding: 9px 14px 9px 11px;
+    gap: 9px;
+    bottom: max(16px, calc(env(safe-area-inset-bottom) + 14px));
+  }
+  .ticker__price { font-size: 15px; }
+  .ticker__sep { height: 12px; }
+  .ticker__label, .ticker__unit {
+    font-size: 9px;
+    letter-spacing: 0.22em;
+  }
 }
 
 /* Reduce motion preference */

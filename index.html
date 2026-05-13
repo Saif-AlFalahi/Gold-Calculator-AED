@@ -60,6 +60,14 @@
           </div>
         </div>
 
+        <label class="vat-toggle" for="vat">
+          <input type="checkbox" id="vat" name="vat" />
+          <span class="vat-toggle__box" aria-hidden="true">
+            <span class="vat-toggle__check"></span>
+          </span>
+          <span class="vat-toggle__text">Include 5% VAT</span>
+        </label>
+
         <button type="submit" class="submit" id="submit-btn">
           <span class="submit__label">Calculate</span>
         </button>
@@ -70,6 +78,14 @@
       <span class="strip strip-bottom" aria-hidden="true"></span>
     </section>
   </main>
+
+  <aside class="ticker" id="ticker" aria-label="Live gold price per gram in AED">
+    <span class="ticker__pulse" aria-hidden="true"></span>
+    <span class="ticker__label">24K</span>
+    <span class="ticker__sep" aria-hidden="true"></span>
+    <span class="ticker__price" id="ticker-price">—</span>
+    <span class="ticker__unit">AED / g</span>
+  </aside>
 
   <script src="script.js" defer></script>
 </body>
