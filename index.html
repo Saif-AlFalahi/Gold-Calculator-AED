@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Gold Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-frame" aria-hidden="true">
+    <span class="page-corner page-corner--tl"></span>
+    <span class="page-corner page-corner--tr"></span>
+    <span class="page-corner page-corner--bl"></span>
+    <span class="page-corner page-corner--br"></span>
+  </div>
+
+  <main class="stage">
+    <section class="card" aria-labelledby="title">
+      <span class="strip strip-top" aria-hidden="true"></span>
+
+      <h1 id="title" class="card__title">Gold Calculator</h1>
+      <p class="card__subtitle">Live selling value in AED</p>
+
+      <form id="calc-form" class="form" novalidate>
+        <div class="field">
+          <label for="grams" class="label">Weight</label>
+          <div class="input-wrap">
+            <input
+              id="grams"
+              name="grams"
+              type="number"
+              inputmode="decimal"
+              enterkeyhint="go"
+              min="0"
+              step="0.01"
+              placeholder="0.00"
+              required
+              autocomplete="off"
+            />
+            <span class="suffix">grams</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="karat" class="label">Karat</label>
+          <div class="input-wrap">
+            <select id="karat" name="karat">
+              <option value="0.9999" selected>24K</option>
+              <option value="0.9167">22K</option>
+              <option value="0.8750">21K</option>
+              <option value="0.7500">18K</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="submit" id="submit-btn">
+          <span class="submit__label">Calculate</span>
+        </button>
+      </form>
+
+      <div id="result" class="result" aria-live="polite" aria-atomic="true"></div>
+
+      <span class="strip strip-bottom" aria-hidden="true"></span>
+    </section>
+  </main>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
