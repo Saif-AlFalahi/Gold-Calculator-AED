@@ -79,12 +79,15 @@
     </section>
   </main>
 
-  <aside class="ticker" id="ticker" aria-label="Live gold price per gram in AED">
-    <span class="ticker__pulse" aria-hidden="true"></span>
-    <span class="ticker__label">24K</span>
-    <span class="ticker__sep" aria-hidden="true"></span>
-    <span class="ticker__price" id="ticker-price">—</span>
-    <span class="ticker__unit">AED / g</span>
+  <aside class="ticker" id="ticker" aria-label="Live gold price per gram by karat in AED">
+    <div class="ticker__head">
+      <span class="ticker__pulse" aria-hidden="true"></span>
+      <span class="ticker__label">Live</span>
+    </div>
+    <span class="ticker__divider" aria-hidden="true"></span>
+    <div class="ticker__viewport">
+      <div class="ticker__track" id="ticker-track" aria-hidden="true"></div>
+    </div>
   </aside>
 
   <script src="script.js" defer></script>
