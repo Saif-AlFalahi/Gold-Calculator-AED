@@ -154,8 +154,120 @@ document.addEventListener('visibilitychange', () => {
 });
 
 buildTicker();
+setupCarousel();
 refreshPrice();
 startPolling();
+
+function setupCarousel() {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReducedMotion) return;
+
+  const viewportEl = trackEl.parentElement;
+
+  // CSS animation took 22s to traverse 50% of the track. Match that pace.
+  const SCROLL_DURATION_S = 22;
+  const HOVER_PAUSE = true;
+  const FRICTION = 0.92;
+  const RESTORE = 0.08;
+
+  let offset = 0;
+  let velocity = 0;
+  let baselineVelocity = -0.5; // px per frame; recomputed once we can measure
+  let halfWidth = 0;
+
+  let dragging = false;
+  let dragStartX = 0;
+  let dragStartOffset = 0;
+  let lastDragX = 0;
+  let lastDragTime = 0;
+
+  let hovered = false;
+  let activePointerId = null;
+
+  function measure() {
+    const w = trackEl.scrollWidth / 2;
+    if (w > 0) {
+      halfWidth = w;
+      // Negative = right-to-left scroll
+      baselineVelocity = -(halfWidth / (SCROLL_DURATION_S * 60));
+    }
+  }
+
+  function wrap() {
+    if (halfWidth <= 0) return;
+    while (offset <= -halfWidth) offset += halfWidth;
+    while (offset > 0) offset -= halfWidth;
+  }
+
+  function tick() {
+    if (!dragging && !(hovered && HOVER_PAUSE)) {
+      offset += velocity;
+      // Decay toward baseline so a flick smoothly returns to auto-scroll
+      velocity = velocity * FRICTION + baselineVelocity * RESTORE;
+    }
+    wrap();
+    trackEl.style.transform = `translate3d(${offset.toFixed(2)}px, 0, 0)`;
+    requestAnimationFrame(tick);
+  }
+
+  function onPointerDown(e) {
+    // Mouse: only left button. Touch/pen: any.
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    dragging = true;
+    activePointerId = e.pointerId;
+    dragStartX = e.clientX;
+    dragStartOffset = offset;
+    lastDragX = e.clientX;
+    lastDragTime = performance.now();
+    velocity = 0;
+    try { viewportEl.setPointerCapture(e.pointerId); } catch (_) {}
+    tickerEl.classList.add('is-dragging');
+  }
+
+  function onPointerMove(e) {
+    if (!dragging || e.pointerId !== activePointerId) return;
+    const delta = e.clientX - dragStartX;
+    offset = dragStartOffset + delta;
+
+    const now = performance.now();
+    const dt = Math.max(now - lastDragTime, 1);
+    // Convert px/ms to px/frame (assuming ~60 fps)
+    velocity = ((e.clientX - lastDragX) / dt) * 16.67;
+    lastDragX = e.clientX;
+    lastDragTime = now;
+  }
+
+  function onPointerUp(e) {
+    if (!dragging || e.pointerId !== activePointerId) return;
+    dragging = false;
+    activePointerId = null;
+    try { viewportEl.releasePointerCapture(e.pointerId); } catch (_) {}
+    tickerEl.classList.remove('is-dragging');
+  }
+
+  function onPointerEnter(e) {
+    if (e.pointerType === 'mouse') hovered = true;
+  }
+  function onPointerLeave(e) {
+    if (e.pointerType === 'mouse') hovered = false;
+  }
+
+  viewportEl.addEventListener('pointerdown', onPointerDown);
+  viewportEl.addEventListener('pointermove', onPointerMove);
+  viewportEl.addEventListener('pointerup', onPointerUp);
+  viewportEl.addEventListener('pointercancel', onPointerUp);
+  viewportEl.addEventListener('pointerenter', onPointerEnter);
+  viewportEl.addEventListener('pointerleave', onPointerLeave);
+
+  // Re-measure when prices change widths, or the viewport resizes
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(measure).observe(trackEl);
+  }
+  window.addEventListener('resize', measure);
+
+  measure();
+  requestAnimationFrame(tick);
+}
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();

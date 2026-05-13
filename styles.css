@@ -618,6 +618,8 @@ input[type=number] { -moz-appearance: textfield; }
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  /* Capture horizontal pan; leave vertical for page scroll */
+  touch-action: pan-y;
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
           mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
 }
@@ -628,13 +630,14 @@ input[type=number] { -moz-appearance: textfield; }
   gap: 26px;
   padding-left: 16px;
   white-space: nowrap;
-  animation: tickerScroll 22s linear infinite;
   will-change: transform;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-@keyframes tickerScroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+@media (hover: hover) {
+  .ticker__viewport { cursor: grab; }
+  .ticker.is-dragging .ticker__viewport { cursor: grabbing; }
 }
 
 .ticker__item {
@@ -688,21 +691,14 @@ input[type=number] { -moz-appearance: textfield; }
   flex-shrink: 0;
 }
 
-/* Pause the scroll on desktop hover so users can read */
-@media (hover: hover) {
-  .ticker:hover .ticker__track {
-    animation-play-state: paused;
-  }
-}
-
-/* Reduced motion: stop scroll + pulse, wrap karats so all 4 are visible */
+/* Reduced motion: skip scroll + pulse, wrap karats so all 4 are visible */
 @media (prefers-reduced-motion: reduce) {
   .ticker__track {
-    animation: none;
     flex-wrap: wrap;
     white-space: normal;
     gap: 8px 18px;
     padding-left: 0;
+    transform: none !important;
   }
   .ticker__viewport { -webkit-mask-image: none; mask-image: none; }
   .ticker__pulse::before,
